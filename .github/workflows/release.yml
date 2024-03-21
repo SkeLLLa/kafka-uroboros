@@ -1,10 +1,5 @@
 name: release
 
-publish:
-  permissions:
-    id-token: write
-    content: write
-
 env:
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository }}
