@@ -9,6 +9,6 @@ module.exports = {
     require('./changelog'),
     require('./npm-publish'),
     require('./git'),
-    require('./github-release'),
+    require('./github'),
   ],
 };
