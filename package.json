@@ -1,0 +1,95 @@
+{
+  "$schema": "http://json.schemastore.org/package.json",
+  "name": "kafka-uroboros",
+  "version": "1.0.0",
+  "description": "High-level kafka client based on kafkajs with non-blocking retries of failed messages and easy configuration.",
+  "keywords": [
+    "kafka",
+    "kafkajs",
+    "retry",
+    "retries",
+    "non-blocking",
+    "non-blocking-retries"
+  ],
+  "homepage": "https://github.com/SkeLLLa/kafka-uroboros/blob/master/README.md",
+  "bugs": {
+    "url": "https://github.com/SkeLLLa/kafka-uroboros/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/SkeLLLa/kafka-uroboros.git"
+  },
+  "license": "MIT",
+  "author": "m03geek",
+  "main": "src/index.ts",
+  "directories": {
+    "lib": "src",
+    "doc": "docs",
+    "example": "examples",
+    "test": "test"
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "pnpm run build:node && pnpm run build:docs",
+    "build:clean": "rm -rf dist",
+    "build:docs": "api-extractor run -l && api-documenter markdown -i ./temp -o ./docs/api && pretty-quick",
+    "build:node": "tsc -p tsconfig.build.json",
+    "lint": "pnpm run lint:types && pnpm run lint:codestyle && pnpm run lint:packages",
+    "lint:codestyle": "eslint . --ext js,jsx,ts,tsx",
+    "lint:packages": "pnpm audit --prod --audit-level=high",
+    "lint:types": "tsc -p tsconfig.json",
+    "release": "semantic-release",
+    "test": "pnpm run lint && pnpm run test:unit",
+    "test:unit": "globstar -- node --no-warnings --import tsx --test \"test/**/*.spec.ts\""
+  },
+  "dependencies": {
+    "kafkajs": "2.2.4"
+  },
+  "devDependencies": {
+    "@ianvs/prettier-plugin-sort-imports": "^4.2.1",
+    "@microsoft/api-documenter": "^7.24.1",
+    "@microsoft/api-extractor": "^7.43.0",
+    "@semantic-release/changelog": "^6.0.3",
+    "@semantic-release/commit-analyzer": "^12.0.0",
+    "@semantic-release/exec": "^6.0.3",
+    "@semantic-release/git": "^10.0.1",
+    "@semantic-release/github": "^10.0.2",
+    "@semantic-release/npm": "^12.0.0",
+    "@semantic-release/release-notes-generator": "^12.1.0",
+    "@tsconfig/node-lts": "^20.1.1",
+    "@tsconfig/strictest": "^2.0.3",
+    "@types/node": "^20.11.30",
+    "@typescript-eslint/eslint-plugin": "^7.3.1",
+    "conventional-changelog-conventionalcommits": "^7.0.2",
+    "eslint": "^8.57.0",
+    "eslint-config-google": "^0.14.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-import": "^2.29.1",
+    "eslint-plugin-prettier": "^5.1.3",
+    "eslint-plugin-tsdoc": "^0.2.17",
+    "globstar": "^1.0.0",
+    "prettier": "^3.2.5",
+    "prettier-plugin-jsdoc": "^1.3.0",
+    "prettier-plugin-packagejson": "^2.4.12",
+    "prettier-plugin-sh": "^0.14.0",
+    "prettier-plugin-sort-json": "^4.0.0",
+    "pretty-quick": "^4.0.0",
+    "semantic-release": "^23.0.5",
+    "tsx": "^4.7.1",
+    "typescript": "^5.4.3"
+  },
+  "peerDependencies": {
+    "kafkajs": ">=2.2.2"
+  },
+  "packageManager": "pnpm@8.15.5",
+  "engines": {
+    "node": ">=18",
+    "pnpm": ">=8"
+  },
+  "publishConfig": {
+    "main": "dist/index.js",
+    "typings": "dist/index.d.ts"
+  }
+}
