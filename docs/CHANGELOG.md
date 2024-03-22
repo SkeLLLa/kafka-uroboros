@@ -1,3 +1,10 @@
+## [1.2.0](https://github.com/SkeLLLa/kafka-uroboros/compare/v1.1.0...v1.2.0) (2024-03-22)
+
+
+### 🚀 Features
+
+* add retry strategies ([00d9cc2](https://github.com/SkeLLLa/kafka-uroboros/commit/00d9cc2c25b7b4b7abf477e415a645241fafe133))
+
 ## [1.1.0](https://github.com/SkeLLLa/kafka-uroboros/compare/v1.0.0...v1.1.0) (2024-03-21)
 
 

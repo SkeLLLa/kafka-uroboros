@@ -1,7 +1,7 @@
 {
   "$schema": "http://json.schemastore.org/package.json",
   "name": "kafka-uroboros",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "description": "High-level kafka client based on kafkajs with non-blocking retries of failed messages and easy configuration.",
   "keywords": [
     "kafka",
