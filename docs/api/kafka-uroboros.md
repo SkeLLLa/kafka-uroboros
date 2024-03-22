@@ -44,9 +44,20 @@ Async retry consumer headers. Parses and validates message headers.
 </td></tr>
 <tr><td>
 
-[TopicNameGenerator](./kafka-uroboros.topicnamegenerator.md)
+[DeadLetter](./kafka-uroboros.deadletter.md)
 
 </td><td>
+
+A custom exception that will result in the message being sent to the dead-letter topic. To send a message directly to the dead letter topic and avoid any subsequent retries, provide a `DeadLetter` exception to the `messageFailureHandler` callback function.
+
+</td></tr>
+<tr><td>
+
+[TopicNameStrategy](./kafka-uroboros.topicnamestrategy.md)
+
+</td><td>
+
+Retry topic name strategy options.
 
 </td></tr>
 </tbody></table>
@@ -142,6 +153,15 @@ Async retry consumer options
 </td><td>
 
 </td></tr>
+<tr><td>
+
+[ITopicNameStrategyOptions](./kafka-uroboros.itopicnamestrategyoptions.md)
+
+</td><td>
+
+Topic name strategy options
+
+</td></tr>
 </tbody></table>
 
 ## Type Aliases
@@ -185,6 +205,20 @@ Dead letter queue topic name generator function
 </td><td>
 
 Retry topic name generator function
+
+</td></tr>
+<tr><td>
+
+[TTopicNameFn](./kafka-uroboros.ttopicnamefn.md)
+
+</td><td>
+
+</td></tr>
+<tr><td>
+
+[TTopicNameStrategyFactory](./kafka-uroboros.ttopicnamestrategyfactory.md)
+
+</td><td>
 
 </td></tr>
 </tbody></table>

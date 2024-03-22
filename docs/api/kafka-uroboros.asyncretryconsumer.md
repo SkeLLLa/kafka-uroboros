@@ -31,7 +31,7 @@ Description
 </th></tr></thead>
 <tbody><tr><td>
 
-[(constructor)({ maxRetries, retryDelaysSeconds, maxWaitTime, producer, topic, dlqTopicNameGenerator, retryTopicNameGenerator, })](./kafka-uroboros.asyncretryconsumer._constructor_.md)
+[(constructor)({ maxRetries, retryDelaysSeconds, maxWaitTime, producer, topic, groupId, topicNameStrategy, })](./kafka-uroboros.asyncretryconsumer._constructor_.md)
 
 </td><td>
 
@@ -139,7 +139,7 @@ Description
 
 </td><td>
 
-Wraps the provided handler with a handler that will provide some extra callback functions for dealing with message processing errors and retries
+Wraps the provided handler with a handler that will provide some extra callback functions for dealing with message processing errors and retries. 🚨 \*\*Important\*\* 🚨 Like the KafkaJS docs mention, using `eachBatch` directly is considered a "more advanced use case" and it is recommended that you use the `eachMessage` approach unless there is a specific reason that mode of processing is not workable. While the implementation inside this module is a lot more complex for the `eachBatch` processing model than `eachMessage`<!-- -->, the primary difference exposed to the consumer of this functionality is that instead of simply allowing exceptions to bubble up to the `eachMessage` wrapper function, the `messageFailureHandler` callback function must be used. Also, when processing retries of a message using `eachBatch`<!-- -->, some of the batch metadata provided to the `eachBatch` handler function will almost certainly be incorrect since the batch of messages from a retry topic may be split since some messages may not ready to be retried quite yet. When that happens, no attempt is made to keep the various attributes of the `batch` object (i.e. `offsetLag()`<!-- -->, `offsetLagLow()`<!-- -->, `firstOffset()` and `lastOffset()`<!-- -->), in sync with the actual batch of messages that are being passed to your `eachBatch` handler.
 
 </td></tr>
 <tr><td>

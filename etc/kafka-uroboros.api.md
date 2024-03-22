@@ -15,10 +15,6 @@ import {
   type EachMessagePayload,
   type KafkaMessage,
 } from 'kafkajs';
-import {
-  TDLQTopicNameGenerator as TDLQTopicNameGenerator_2,
-  TRetryTopicNameGenerator as TRetryTopicNameGenerator_2,
-} from '../..';
 
 // Warning: (ae-forgotten-export) The symbol "IAsyncRetryConsumerEventMap" needs to be exported by the entry point index.d.ts
 //
@@ -30,8 +26,8 @@ export class AsyncRetryConsumer extends EventEmitter<IAsyncRetryConsumerEventMap
     maxWaitTime,
     producer,
     topic,
-    dlqTopicNameGenerator,
-    retryTopicNameGenerator,
+    groupId,
+    topicNameStrategy,
   }: IAsyncRetryConsumerOptions);
   eachBatch(handler: TAsyncRetryConsumerBatchHandler): EachBatchHandler;
   eachMessage(handler: TAsyncRetryConsumerMessageHandler): EachMessageHandler;
@@ -76,9 +72,7 @@ export class AsyncRetryConsumerHeaders
   readonly ttl: number;
 }
 
-// Warning: (ae-internal-missing-underscore) The name "DeadLetter" should be prefixed with an underscore because the declaration is marked as @internal
-//
-// @internal
+// @public
 export class DeadLetter extends Error {
   constructor(reason: string);
 }
@@ -126,13 +120,13 @@ export interface IAsyncRetryConsumerMessageHeaders {
 
 // @public
 export interface IAsyncRetryConsumerOptions {
-  dlqTopicNameGenerator?: TDLQTopicNameGenerator;
+  groupId?: string | undefined;
   maxRetries?: number;
   maxWaitTime?: number;
   producer: Pick<Producer, 'send'>;
   retryDelaysSeconds?: number[];
-  retryTopicNameGenerator?: TRetryTopicNameGenerator;
   topic: string;
+  topicNameStrategy: TTopicNameStrategyFactory;
 }
 
 // @public (undocumented)
@@ -154,6 +148,13 @@ export interface IRetryTopicNameGeneratorOptions
   attempt: number;
   delay: number;
   topic: string;
+}
+
+// @public
+export interface ITopicNameStrategyOptions {
+  attempt?: number;
+  delay?: number;
+  isDlq?: boolean;
 }
 
 // Warning: (ae-internal-missing-underscore) The name "ITopics" should be prefixed with an underscore because the declaration is marked as @internal
@@ -196,20 +197,26 @@ export type TDLQTopicNameGenerator = (
   options: IDLQTopicNameGeneratorOptions,
 ) => string;
 
-// @public (undocumented)
-export class TopicNameGenerator {
-  // (undocumented)
-  static delay: TRetryTopicNameGenerator_2;
-  // (undocumented)
-  static dlq: TDLQTopicNameGenerator_2;
-  // (undocumented)
-  static retry: TRetryTopicNameGenerator_2;
+// @public
+export class TopicNameStrategy {
+  static readonly byDelay: TTopicNameStrategyFactory;
+  static readonly byDelayGroup: TTopicNameStrategyFactory;
+  static readonly byRetry: TTopicNameStrategyFactory;
+  static readonly byRetryGroup: TTopicNameStrategyFactory;
 }
 
 // @public
 export type TRetryTopicNameGenerator = (
   options: IRetryTopicNameGeneratorOptions,
 ) => string;
+
+// @public (undocumented)
+export type TTopicNameFn = (options: ITopicNameStrategyOptions) => string;
+
+// @public (undocumented)
+export type TTopicNameStrategyFactory = (
+  options: Pick<IAsyncRetryConsumerOptions, 'topic' | 'groupId'>,
+) => TTopicNameFn;
 
 // (No @packageDocumentation comment for this package)
 ```

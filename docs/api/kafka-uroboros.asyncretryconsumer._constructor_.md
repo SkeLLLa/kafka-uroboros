@@ -9,7 +9,7 @@ Create a new AsyncRetryConsumer instance
 **Signature:**
 
 ```typescript
-constructor({ maxRetries, retryDelaysSeconds, maxWaitTime, producer, topic, dlqTopicNameGenerator, retryTopicNameGenerator, }: IAsyncRetryConsumerOptions);
+constructor({ maxRetries, retryDelaysSeconds, maxWaitTime, producer, topic, groupId, topicNameStrategy, }: IAsyncRetryConsumerOptions);
 ```
 
 ## Parameters
@@ -29,7 +29,7 @@ Description
 </th></tr></thead>
 <tbody><tr><td>
 
-{ maxRetries, retryDelaysSeconds, maxWaitTime, producer, topic, dlqTopicNameGenerator, retryTopicNameGenerator, }
+{ maxRetries, retryDelaysSeconds, maxWaitTime, producer, topic, groupId, topicNameStrategy, }
 
 </td><td>
 

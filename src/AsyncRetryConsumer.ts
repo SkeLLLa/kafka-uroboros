@@ -24,11 +24,10 @@ import type {
   TAsyncRetryConsumerBatchHandler,
   TAsyncRetryConsumerMessageHandler,
 } from './types/AsyncRetryConsumerMessage';
-import type {
-  TDLQTopicNameGenerator,
-  TRetryTopicNameGenerator,
-} from './types/TopicNameGenerator';
-import { TopicNameGenerator } from './utils/TopicNameGenerator';
+import {
+  TopicNameStrategy,
+  type TTopicNameStrategyFactory,
+} from './utils/TopicNameStrategy';
 
 /**
  * Available topics
@@ -50,6 +49,10 @@ export interface IAsyncRetryConsumerOptions {
    **/
   topic: string;
   /**
+   * The consumer group id.
+   **/
+  groupId?: string | undefined;
+  /**
    * A previously configured (and connected) producer that can be used to publish messages into the appropriate delay and retry topics
    **/
   producer: Pick<Producer, 'send'>;
@@ -69,13 +72,9 @@ export interface IAsyncRetryConsumerOptions {
    **/
   retryDelaysSeconds?: number[];
   /**
-   * Retry topic name generator
+   * Retry topic name strategy
    */
-  retryTopicNameGenerator?: TRetryTopicNameGenerator;
-  /**
-   * Dead letter topic name generator
-   */
-  dlqTopicNameGenerator?: TDLQTopicNameGenerator;
+  topicNameStrategy: TTopicNameStrategyFactory;
 }
 
 type TTopicPartition = `${string}:${number}`;
@@ -113,10 +112,11 @@ export class AsyncRetryConsumer extends EventEmitter<IAsyncRetryConsumerEventMap
     maxWaitTime = 5000,
     producer,
     topic,
-    dlqTopicNameGenerator = TopicNameGenerator.dlq,
-    retryTopicNameGenerator = TopicNameGenerator.retry,
+    groupId,
+    topicNameStrategy = TopicNameStrategy.byRetry,
   }: IAsyncRetryConsumerOptions) {
     super();
+
     if (maxRetries <= 0) {
       throw new AsyncRetryConsumerError({
         message: `"maxRetries" must be > 0`,
@@ -126,6 +126,12 @@ export class AsyncRetryConsumer extends EventEmitter<IAsyncRetryConsumerEventMap
     if (retryDelaysSeconds.length > maxRetries) {
       throw new AsyncRetryConsumerError({
         message: `retryDelays (${retryDelaysSeconds.toString()}) doesn't need to be longer than maxRetries (${maxRetries})`,
+        code: EAsyncRetryConsumerErrorCode.INVALID_CONFIGURATION,
+      });
+    }
+    if (!topic && !groupId) {
+      throw new AsyncRetryConsumerError({
+        message: `At least one of \`topic\` or \`groupId\` should be configured`,
         code: EAsyncRetryConsumerErrorCode.INVALID_CONFIGURATION,
       });
     }
@@ -140,12 +146,14 @@ export class AsyncRetryConsumer extends EventEmitter<IAsyncRetryConsumerEventMap
         retryDelaysSeconds[retryDelaysSeconds.length - 1]) as number;
     });
 
+    const topicNameGenerator = topicNameStrategy({ topic, groupId });
+
     this.topics = {
       original: [topic],
       retries: this.retryDelaysSeconds.map((delay, attempt) => {
-        return retryTopicNameGenerator({ delay, attempt, topic });
+        return topicNameGenerator({ delay, attempt });
       }),
-      dlq: [dlqTopicNameGenerator({ topic })],
+      dlq: [topicNameGenerator({ isDlq: true })],
     };
   }
 
@@ -183,7 +191,12 @@ export class AsyncRetryConsumer extends EventEmitter<IAsyncRetryConsumerEventMap
   }
 
   /**
-   * Wraps the provided handler with a handler that will provide some extra callback functions for dealing with message processing errors and retries
+   * Wraps the provided handler with a handler that will provide some extra callback functions for dealing with message processing errors and retries.
+   * 🚨 **Important** 🚨
+   * Like the KafkaJS docs mention, using `eachBatch` directly is considered a "more advanced use case" and it is recommended that you use the `eachMessage` approach unless there is a specific reason that mode of processing is not workable.
+   * While the implementation inside this module is a lot more complex for the `eachBatch` processing model than `eachMessage`, the primary difference exposed to the consumer of this functionality is that instead of simply allowing exceptions to bubble up to the `eachMessage` wrapper function, the `messageFailureHandler` callback function must be used.
+   * Also, when processing retries of a message using `eachBatch`, some of the batch metadata provided to the `eachBatch` handler function will almost certainly be incorrect since the batch of messages from a retry topic may be split since some messages may not ready to be retried quite yet.
+   * When that happens, no attempt is made to keep the various attributes of the `batch` object (i.e. `offsetLag()`, `offsetLagLow()`, `firstOffset()` and `lastOffset()`), in sync with the actual batch of messages that are being passed to your `eachBatch` handler.
    * @param handler - your batch handler that will be provided with a few extra parameters relevant to the async retry process
    * @returns - a standard batch handler that can be passed to a KafkaJS consumer instance
    */

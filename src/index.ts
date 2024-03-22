@@ -8,7 +8,12 @@ export { AsyncRetryConsumerHeaders } from './AsyncRetryConsumerHeaders';
 
 export { AsyncRetryConsumerError, DeadLetter, PauseProcessing } from './errors';
 
-export { TopicNameGenerator } from './utils/TopicNameGenerator';
+export {
+  TopicNameStrategy,
+  type TTopicNameFn,
+  type ITopicNameStrategyOptions,
+  type TTopicNameStrategyFactory,
+} from './utils/TopicNameStrategy';
 
 export type {
   EAsyncRetryConsumerEvents,

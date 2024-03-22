@@ -33,17 +33,17 @@ Description
 </th></tr></thead>
 <tbody><tr><td>
 
-[dlqTopicNameGenerator?](./kafka-uroboros.iasyncretryconsumeroptions.dlqtopicnamegenerator.md)
+[groupId?](./kafka-uroboros.iasyncretryconsumeroptions.groupid.md)
 
 </td><td>
 
 </td><td>
 
-[TDLQTopicNameGenerator](./kafka-uroboros.tdlqtopicnamegenerator.md)
+string \| undefined
 
 </td><td>
 
-_(Optional)_ Dead letter topic name generator
+_(Optional)_ The consumer group id.
 
 </td></tr>
 <tr><td>
@@ -108,21 +108,6 @@ _(Optional)_ A series of delays (in seconds) that will be used for each correspo
 </td></tr>
 <tr><td>
 
-[retryTopicNameGenerator?](./kafka-uroboros.iasyncretryconsumeroptions.retrytopicnamegenerator.md)
-
-</td><td>
-
-</td><td>
-
-[TRetryTopicNameGenerator](./kafka-uroboros.tretrytopicnamegenerator.md)
-
-</td><td>
-
-_(Optional)_ Retry topic name generator
-
-</td></tr>
-<tr><td>
-
 [topic](./kafka-uroboros.iasyncretryconsumeroptions.topic.md)
 
 </td><td>
@@ -134,6 +119,21 @@ string
 </td><td>
 
 The consumer topic that this async retry consumer is handling messages for.
+
+</td></tr>
+<tr><td>
+
+[topicNameStrategy](./kafka-uroboros.iasyncretryconsumeroptions.topicnamestrategy.md)
+
+</td><td>
+
+</td><td>
+
+[TTopicNameStrategyFactory](./kafka-uroboros.ttopicnamestrategyfactory.md)
+
+</td><td>
+
+Retry topic name strategy
 
 </td></tr>
 </tbody></table>
